@@ -52,12 +52,12 @@ public static class DbSeeder
             UserId = students[i - 1].Id,
             FirstName = GetFirstName(i),
             LastName = GetLastName(i),
-            StudentCode = $"EST{2024000 + i}",
-            Email = $"student{i:D2}@taller2.edu",
-            Phone = $"+57310{1000000 + i}",
-            DateOfBirth = new DateTime(2000 + (i % 5), (i % 6) + 1, (i % 20) + 1),
+            StudentCode = $"EST2024{i:000}",
+            Email = $"student{i}@taller2.edu",
+            Phone = $"+573101000{i:03}",
+            DateOfBirth = DateTime.SpecifyKind(new DateTime(2000 + i, 5, i % 28 + 1), DateTimeKind.Utc),
             Program = GetProgram(i),
-            Semester = (i % 8) + 1,
+                    Semester = i % 8 + 1,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         }).ToList();
