@@ -1,0 +1,169 @@
+version: '3.9'
+
+networks:
+  taller2-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  pgadmin-data:
+
+services:
+
+  # ─────────────────────────────────────────────
+  # INFRASTRUCTURE
+  # ─────────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: taller2-postgres
+    environment:
+      POSTGRES_DB: academic_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - taller2-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d academic_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: taller2-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - taller2-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: taller2-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@taller2.edu
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DISABLE_POSTFIX: "true"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - taller2-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # BACKEND SERVICES
+  # ─────────────────────────────────────────────
+
+  academic-service:
+    build:
+      context: .
+      dockerfile: src/Services/AcademicService/Dockerfile
+    container_name: taller2-academic
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=academic_db;Username=postgres;Password=postgres123
+      - Jwt__Key=Taller2NET_SuperSecretKey_AtLeast32Chars!
+      - Jwt__Issuer=Taller2NET
+      - Jwt__Audience=Taller2NET-Client
+    ports:
+      - "8080:8080"
+    networks:
+      - taller2-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  statistics-service:
+    build:
+      context: .
+      dockerfile: src/Services/StatisticsService/Dockerfile
+    container_name: taller2-statistics
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8081
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=academic_db;Username=postgres;Password=postgres123
+      - ConnectionStrings__Redis=redis:6379
+      - Jwt__Key=Taller2NET_SuperSecretKey_AtLeast32Chars!
+      - Jwt__Issuer=Taller2NET
+      - Jwt__Audience=Taller2NET-Client
+    ports:
+      - "8081:8081"
+    networks:
+      - taller2-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      academic-service:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # API GATEWAY
+  # ─────────────────────────────────────────────
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/ApiGateway/Dockerfile
+    container_name: taller2-gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - Jwt__Key=Taller2NET_SuperSecretKey_AtLeast32Chars!
+      - Jwt__Issuer=Taller2NET
+      - Jwt__Audience=Taller2NET-Client
+      - ReverseProxy__Clusters__academic-cluster__Destinations__academic-service__Address=http://academic-service:8080
+      - ReverseProxy__Clusters__statistics-cluster__Destinations__statistics-service__Address=http://statistics-service:8081
+    ports:
+      - "80:80"
+    networks:
+      - taller2-network
+    depends_on:
+      academic-service:
+        condition: service_healthy
+      statistics-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped

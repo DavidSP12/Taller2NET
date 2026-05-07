@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ApiGateway/ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/">
+    <Project Path="src/Services/AcademicService/AcademicService.csproj" />
+    <Project Path="src/Services/StatisticsService/StatisticsService.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/Taller2NET.Shared/Taller2NET.Shared.csproj" />
+  </Folder>
+</Solution>
