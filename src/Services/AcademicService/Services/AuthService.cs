@@ -78,7 +78,7 @@ public class AuthService : IAuthService
         var jwtKey = _config["Jwt:Key"] ?? throw new InvalidOperationException("JWT key not configured");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.UtcNow.AddHours(8);
+        var expires = DateTime.UtcNow.AddHours(double.Parse(_config["Jwt:ExpirationHours"] ?? "8"));
 
         var claims = new[]
         {

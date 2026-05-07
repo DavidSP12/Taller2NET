@@ -174,7 +174,7 @@ public class StatisticsService : IStatisticsService
             Math.Round(grades.Average(), 2),
             Math.Round(grades.Max(), 2),
             Math.Round(grades.Min(), 2),
-            Math.Round((double)grades.Count(g => g >= 3.0) / grades.Count * 100, 2),
+            Math.Round((double)grades.Count(g => g >= PassThreshold) / grades.Count * 100, 2),
             grades.Count);
     }
 
@@ -229,6 +229,16 @@ public class StatisticsService : IStatisticsService
         }).OrderByDescending(p => p.StudentCount);
     }
 
+    private static readonly double PassThreshold = 3.0;
+
+    private static readonly (double MinGrade, string Label)[] PerformanceLevels =
+    {
+        (4.5, "Excelente"),
+        (3.5, "Bueno"),
+        (3.0, "Aprobado"),
+        (2.0, "En riesgo")
+    };
+
     private static StudentStatsDto BuildStudentStats(Student s)
     {
         var activeEnrollments = s.Enrollments.Where(e => e.Status == EnrollmentStatus.Active).ToList();
@@ -249,14 +259,8 @@ public class StatisticsService : IStatisticsService
               / allAttendances.Count * 100
             : 0;
 
-        var performance = weightedAvg switch
-        {
-            >= 4.5 => "Excelente",
-            >= 3.5 => "Bueno",
-            >= 3.0 => "Aprobado",
-            >= 2.0 => "En riesgo",
-            _ => "Reprobado"
-        };
+        var performance = PerformanceLevels
+            .FirstOrDefault(p => weightedAvg >= p.MinGrade).Label ?? "Reprobado";
 
         return new StudentStatsDto(
             s.Id, s.StudentCode, $"{s.FirstName} {s.LastName}",

@@ -55,7 +55,7 @@ public static class DbSeeder
             StudentCode = $"EST{2024000 + i}",
             Email = $"student{i:D2}@taller2.edu",
             Phone = $"+57310{1000000 + i}",
-            DateOfBirth = new DateTime(2000 + (i % 5), (i % 12) + 1, (i % 28) + 1),
+            DateOfBirth = new DateTime(2000 + (i % 5), (i % 6) + 1, (i % 20) + 1),
             Program = GetProgram(i),
             Semester = (i % 8) + 1,
             IsActive = true,

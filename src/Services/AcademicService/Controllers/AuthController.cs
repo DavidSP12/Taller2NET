@@ -24,10 +24,13 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(dto);
         if (result is null)
         {
-            _logger.LogWarning("Failed login attempt for user: {Username}", dto.Username);
+            // Sanitize username before logging to prevent log forging
+            var safeUsername = System.Text.RegularExpressions.Regex.Replace(dto.Username, @"[\r\n]", "_");
+            _logger.LogWarning("Failed login attempt for user: {Username}", safeUsername);
             return Unauthorized(new { Success = false, Message = "Invalid credentials" });
         }
-        _logger.LogInformation("User {Username} logged in", dto.Username);
+        var safeUser = System.Text.RegularExpressions.Regex.Replace(dto.Username, @"[\r\n]", "_");
+        _logger.LogInformation("User {Username} logged in", safeUser);
         return Ok(new { Success = true, Data = result });
     }
 

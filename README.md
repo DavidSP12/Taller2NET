@@ -1,6 +1,6 @@
 # Taller2NET — Arquitectura Backend N-Tier con .NET 8
 
-> **Taller Universitario** | Arquitectura Backend · Microservicios · Docker · .NET 8 · PostgreSQL · Redis
+> **Taller Universitario** | Arquitectura Backend · Service-Based (N-Tier) · Docker · .NET 8 · PostgreSQL · Redis
 
 ---
 
