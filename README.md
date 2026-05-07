@@ -24,6 +24,7 @@
 
 ## 🏗️ Diagrama de Arquitectura General
 
+```mermaid
 graph TB
     Client["🌐 Cliente<br/>(Browser / Postman)"]
 
@@ -49,8 +50,9 @@ graph TB
     SS -->|EF Core read| PG
     SS -->|Cache| RD
     PGA -->|Admin| PG
----
+```
 
+---
 ## 📦 Diagrama de Componentes N-Tier
 
 ```mermaid
