@@ -249,6 +249,10 @@ docker-compose ps
 | `student01` | `Student@123` | Student |
 | pgAdmin email: `admin@taller2.edu` | `admin123` | pgAdmin |
 
+### 6. Acceder al frontend
+```bash
+http://localhost:3000/
+```
 ---
 
 ## 🔐 Autenticación JWT
