@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taller2NET — Dashboard Estadísticas</title>
+  <meta name="description" content="Panel de estadísticas académicas del sistema Taller2NET">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Login Overlay -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">📊</div>
+        <h1>Taller2NET</h1>
+        <p>Dashboard de Estadísticas Académicas</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Usuario</label>
+          <input type="text" id="username" value="admin" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" value="Admin@123" required>
+        </div>
+        <button type="submit" id="loginBtn" class="btn-primary">Iniciar Sesión</button>
+        <p id="loginError" class="error-msg"></p>
+        <div class="credentials-hint">
+          <span>admin / Admin@123</span> · <span>teacher01 / Teacher@123</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">📊</span>
+        <span class="brand-text">Taller2NET</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-section="summary" onclick="showSection('summary')">📋 Resumen</button>
+        <button class="nav-btn" data-section="courses" onclick="showSection('courses')">📚 Cursos</button>
+        <button class="nav-btn" data-section="students" onclick="showSection('students')">👨‍🎓 Estudiantes</button>
+        <button class="nav-btn" data-section="top-courses" onclick="showSection('top-courses')">🏆 Top Cursos</button>
+        <button class="nav-btn" data-section="attendance" onclick="showSection('attendance')">📋 Asistencia</button>
+        <button class="nav-btn" data-section="grades" onclick="showSection('grades')">📝 Notas</button>
+        <button class="nav-btn" data-section="activity" onclick="showSection('activity')">🔄 Actividad</button>
+        <button class="nav-btn" data-section="programs" onclick="showSection('programs')">🏛️ Programas</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <span id="userRole" class="user-role">Admin</span>
+          <span id="userName" class="user-name">admin</span>
+        </div>
+        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <h2 id="sectionTitle">Resumen General</h2>
+        <div class="top-bar-actions">
+          <span id="cacheSource" class="cache-badge"></span>
+          <button class="btn-refresh" onclick="refreshCurrentSection()">🔄 Refrescar</button>
+        </div>
+      </header>
+
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Cargando datos...</p>
+      </div>
+
+      <!-- Summary Section -->
+      <section id="section-summary" class="section">
+        <div class="stats-grid" id="summaryCards"></div>
+      </section>
+
+      <!-- Courses Section -->
+      <section id="section-courses" class="section hidden">
+        <div class="table-container" id="coursesTable"></div>
+      </section>
+
+      <!-- Students Section -->
+      <section id="section-students" class="section hidden">
+        <div class="table-container" id="studentsTable"></div>
+      </section>
+
+      <!-- Top Courses Section -->
+      <section id="section-top-courses" class="section hidden">
+        <div class="controls-bar">
+          <label>Top <input type="number" id="topCount" value="5" min="1" max="20" class="input-sm"> cursos</label>
+          <button class="btn-sm" onclick="loadTopCourses()">Aplicar</button>
+        </div>
+        <div class="cards-grid" id="topCoursesCards"></div>
+      </section>
+
+      <!-- Attendance Section -->
+      <section id="section-attendance" class="section hidden">
+        <div class="controls-bar">
+          <label>Curso ID <input type="number" id="attendanceCourseId" placeholder="Vacío = todos" class="input-sm"></label>
+          <button class="btn-sm" onclick="loadAttendance()">Filtrar</button>
+        </div>
+        <div id="attendanceContent"></div>
+      </section>
+
+      <!-- Grades Section -->
+      <section id="section-grades" class="section hidden">
+        <div class="controls-bar">
+          <label>Curso ID <input type="number" id="gradesCourseId" placeholder="Vacío = todos" class="input-sm"></label>
+          <button class="btn-sm" onclick="loadGrades()">Filtrar</button>
+        </div>
+        <div id="gradesContent"></div>
+      </section>
+
+      <!-- Activity Section -->
+      <section id="section-activity" class="section hidden">
+        <div class="controls-bar">
+          <label>Últimas <input type="number" id="activityCount" value="10" min="1" max="50" class="input-sm"> actividades</label>
+          <button class="btn-sm" onclick="loadActivity()">Aplicar</button>
+        </div>
+        <div class="timeline" id="activityTimeline"></div>
+      </section>
+
+      <!-- Programs Section -->
+      <section id="section-programs" class="section hidden">
+        <div class="cards-grid" id="programsCards"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

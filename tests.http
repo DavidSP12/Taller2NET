@@ -1,0 +1,626 @@
+### =============================================
+### 🔧 VARIABLES
+### =============================================
+@baseUrl = http://localhost
+@academicUrl = http://localhost:8080
+@statisticsUrl = http://localhost:8081
+
+### =============================================
+### 🔐 AUTENTICACIÓN
+### =============================================
+
+### Login como Admin
+# @name loginAdmin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin@123"
+}
+
+###
+
+@adminToken = {{loginAdmin.response.body.$.data.token}}
+
+### Login como Teacher
+# @name loginTeacher
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "teacher01",
+  "password": "Teacher@123"
+}
+
+###
+
+@teacherToken = {{loginTeacher.response.body.$.data.token}}
+
+### Login como Student
+# @name loginStudent
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "student01",
+  "password": "Student@123"
+}
+
+###
+
+@studentToken = {{loginStudent.response.body.$.data.token}}
+
+### Registrar nuevo estudiante (público)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "newstudent01",
+  "email": "newstudent01@universidad.edu",
+  "password": "NewStudent@123",
+  "firstName": "Carlos",
+  "lastName": "Mendoza",
+  "studentCode": "STU-2026-100",
+  "dateOfBirth": "2002-03-15T00:00:00Z",
+  "program": "Ingeniería de Sistemas",
+  "semester": 3
+}
+
+### =============================================
+### 👨‍🎓 STUDENTS (Requiere autenticación)
+### =============================================
+
+### Listar todos los estudiantes (paginado)
+GET {{baseUrl}}/api/students?page=1&pageSize=10
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Listar estudiantes con búsqueda
+GET {{baseUrl}}/api/students?page=1&pageSize=5&search=Carlos
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Obtener estudiante por ID
+GET {{baseUrl}}/api/students/1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Crear estudiante (Admin)
+# @name createStudent
+POST {{baseUrl}}/api/students
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "userId": 1,
+  "firstName": "María",
+  "lastName": "González",
+  "studentCode": "STU-2026-200",
+  "email": "maria.gonzalez@universidad.edu",
+  "phone": "+57 300 1234567",
+  "dateOfBirth": "2001-07-22T00:00:00Z",
+  "program": "Ingeniería de Software",
+  "semester": 5
+}
+
+###
+
+### Crear estudiante (Teacher)
+POST {{baseUrl}}/api/students
+Content-Type: application/json
+Authorization: Bearer {{teacherToken}}
+
+{
+  "userId": 2,
+  "firstName": "Pedro",
+  "lastName": "Ramírez",
+  "studentCode": "STU-2026-201",
+  "email": "pedro.ramirez@universidad.edu",
+  "phone": "+57 310 9876543",
+  "dateOfBirth": "2003-01-10T00:00:00Z",
+  "program": "Ingeniería de Sistemas",
+  "semester": 2
+}
+
+###
+
+### Actualizar estudiante (Admin)
+PUT {{baseUrl}}/api/students/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "firstName": "Carlos",
+  "lastName": "López Actualizado",
+  "email": "carlos.updated@universidad.edu",
+  "phone": "+57 320 5555555",
+  "program": "Ingeniería de Sistemas",
+  "semester": 6,
+  "isActive": true
+}
+
+###
+
+### Desactivar estudiante (Solo Admin - Soft Delete)
+DELETE {{baseUrl}}/api/students/1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### ❌ Intento sin autenticación (debe fallar 401)
+GET {{baseUrl}}/api/students
+
+###
+
+### ❌ Intento como Student crear estudiante (debe fallar 403)
+POST {{baseUrl}}/api/students
+Content-Type: application/json
+Authorization: Bearer {{studentToken}}
+
+{
+  "userId": 3,
+  "firstName": "Test",
+  "lastName": "Forbidden",
+  "studentCode": "STU-FAIL",
+  "email": "fail@test.com",
+  "dateOfBirth": "2000-01-01T00:00:00Z",
+  "program": "Test",
+  "semester": 1
+}
+
+### =============================================
+### 📚 COURSES (Requiere autenticación)
+### =============================================
+
+### Listar todos los cursos
+GET {{baseUrl}}/api/courses
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Obtener curso por ID
+GET {{baseUrl}}/api/courses/1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Crear curso (Admin)
+# @name createCourse
+POST {{baseUrl}}/api/courses
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "code": "CS-401",
+  "name": "Inteligencia Artificial",
+  "description": "Introducción a IA y Machine Learning",
+  "credits": 4,
+  "teacher": "Dr. Alan Turing",
+  "semester": 8,
+  "maxStudents": 30,
+  "schedule": "Lun-Mie 14:00-16:00"
+}
+
+###
+
+### Crear curso (Teacher)
+POST {{baseUrl}}/api/courses
+Content-Type: application/json
+Authorization: Bearer {{teacherToken}}
+
+{
+  "code": "CS-402",
+  "name": "Computación en la Nube",
+  "description": "Arquitecturas cloud con AWS y Azure",
+  "credits": 3,
+  "teacher": "Prof. García",
+  "semester": 7,
+  "maxStudents": 25,
+  "schedule": "Mar-Jue 10:00-12:00"
+}
+
+###
+
+### Actualizar curso
+PUT {{baseUrl}}/api/courses/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Programación Avanzada (Actualizado)",
+  "description": "Curso actualizado con nuevos temas",
+  "credits": 4,
+  "teacher": "Prof. Martínez",
+  "maxStudents": 40,
+  "schedule": "Lun-Mie-Vie 08:00-10:00",
+  "isActive": true
+}
+
+###
+
+### Desactivar curso (Solo Admin - Soft Delete)
+DELETE {{baseUrl}}/api/courses/1
+Authorization: Bearer {{adminToken}}
+
+### =============================================
+### 📝 ENROLLMENTS (Inscripciones)
+### =============================================
+
+### Inscribir estudiante en curso
+# @name createEnrollment
+POST {{baseUrl}}/api/enrollments
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "studentId": 1,
+  "courseId": 1
+}
+
+###
+
+### Obtener inscripciones por estudiante
+GET {{baseUrl}}/api/enrollments/student/1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Obtener inscripciones por curso
+GET {{baseUrl}}/api/enrollments/course/1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Dar de baja (withdraw) una inscripción
+PUT {{baseUrl}}/api/enrollments/1/withdraw
+Authorization: Bearer {{adminToken}}
+
+### =============================================
+### 📋 ATTENDANCE (Asistencia)
+### =============================================
+
+### Registrar asistencia - Presente
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 1,
+  "date": "2026-05-08T08:00:00Z",
+  "status": 1,
+  "notes": "Asistió puntualmente"
+}
+
+###
+
+### Registrar asistencia - Ausente
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 2,
+  "date": "2026-05-08T08:00:00Z",
+  "status": 2,
+  "notes": "No asistió a clase"
+}
+
+###
+
+### Registrar asistencia - Tardanza
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 3,
+  "date": "2026-05-08T08:00:00Z",
+  "status": 3,
+  "notes": "Llegó 15 minutos tarde"
+}
+
+###
+
+### Registrar asistencia - Excusa
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 4,
+  "date": "2026-05-08T08:00:00Z",
+  "status": 4,
+  "notes": "Excusa médica presentada"
+}
+
+###
+
+### Obtener asistencia por inscripción
+GET {{baseUrl}}/api/attendances/enrollment/1
+Authorization: Bearer {{adminToken}}
+
+### =============================================
+### 📊 GRADES (Calificaciones)
+### =============================================
+
+### Registrar nota - Quiz
+POST {{baseUrl}}/api/grades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 1,
+  "type": 1,
+  "value": 4.5,
+  "weight": 0.10,
+  "description": "Quiz 1 - Fundamentos",
+  "evaluatedAt": "2026-05-01T10:00:00Z"
+}
+
+###
+
+### Registrar nota - Parcial (Midterm)
+POST {{baseUrl}}/api/grades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 1,
+  "type": 2,
+  "value": 3.8,
+  "weight": 0.25,
+  "description": "Primer parcial",
+  "evaluatedAt": "2026-05-05T14:00:00Z"
+}
+
+###
+
+### Registrar nota - Final
+POST {{baseUrl}}/api/grades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 1,
+  "type": 3,
+  "value": 4.2,
+  "weight": 0.30,
+  "description": "Examen final",
+  "evaluatedAt": "2026-06-15T09:00:00Z"
+}
+
+###
+
+### Registrar nota - Proyecto
+POST {{baseUrl}}/api/grades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 1,
+  "type": 4,
+  "value": 5.0,
+  "weight": 0.20,
+  "description": "Proyecto final - Sistema de gestión",
+  "evaluatedAt": "2026-06-10T16:00:00Z"
+}
+
+###
+
+### Registrar nota - Tarea (Assignment)
+POST {{baseUrl}}/api/grades
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "enrollmentId": 1,
+  "type": 5,
+  "value": 4.0,
+  "weight": 0.15,
+  "description": "Tarea 3 - Patrones de diseño",
+  "evaluatedAt": "2026-04-20T23:59:00Z"
+}
+
+###
+
+### Obtener notas por inscripción
+GET {{baseUrl}}/api/grades/enrollment/1
+Authorization: Bearer {{adminToken}}
+
+### =============================================
+### 📈 DASHBOARD / STATISTICS SERVICE
+### =============================================
+
+### Resumen global del dashboard
+GET {{baseUrl}}/api/dashboard/summary
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Estadísticas por curso
+GET {{baseUrl}}/api/dashboard/courses
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Estadísticas por estudiante (paginado)
+GET {{baseUrl}}/api/dashboard/students?page=1&pageSize=5
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Estadísticas de un estudiante específico
+GET {{baseUrl}}/api/dashboard/students/1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Top 5 cursos por inscripción
+GET {{baseUrl}}/api/dashboard/top-courses?top=5
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Top 3 cursos por inscripción
+GET {{baseUrl}}/api/dashboard/top-courses?top=3
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Resumen de asistencia (global)
+GET {{baseUrl}}/api/dashboard/attendance
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Resumen de asistencia por curso
+GET {{baseUrl}}/api/dashboard/attendance?courseId=1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Resumen de notas (global)
+GET {{baseUrl}}/api/dashboard/grades
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Resumen de notas por curso
+GET {{baseUrl}}/api/dashboard/grades?courseId=1
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Actividad reciente (últimas 10)
+GET {{baseUrl}}/api/dashboard/activity?count=10
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Actividad reciente (últimas 5)
+GET {{baseUrl}}/api/dashboard/activity?count=5
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Estadísticas por programa académico
+GET {{baseUrl}}/api/dashboard/programs
+Authorization: Bearer {{adminToken}}
+
+### =============================================
+### 🏥 HEALTH CHECKS
+### =============================================
+
+### Health - API Gateway
+GET {{baseUrl}}/health
+
+###
+
+### Health - Academic Service (directo)
+GET {{academicUrl}}/health
+
+###
+
+### Health - Statistics Service (directo)
+GET {{statisticsUrl}}/health
+
+### =============================================
+### 🔄 FLUJO COMPLETO DE PRUEBA
+### Ejecutar en orden secuencial
+### =============================================
+
+### 1. Login como admin para obtener token
+# @name flowLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin@123"
+}
+
+###
+
+@flowToken = {{flowLogin.response.body.$.data.token}}
+
+### 2. Crear un nuevo curso
+# @name flowCreateCourse
+POST {{baseUrl}}/api/courses
+Content-Type: application/json
+Authorization: Bearer {{flowToken}}
+
+{
+  "code": "CS-FLOW-01",
+  "name": "Curso de Prueba Flow",
+  "description": "Curso creado durante el flujo de prueba",
+  "credits": 3,
+  "teacher": "Prof. Test Flow",
+  "semester": 5,
+  "maxStudents": 20,
+  "schedule": "Vie 14:00-17:00"
+}
+
+###
+
+### 3. Verificar que el curso fue creado
+GET {{baseUrl}}/api/courses
+Authorization: Bearer {{flowToken}}
+
+###
+
+### 4. Inscribir estudiante existente (ID 2) en el nuevo curso
+# @name flowEnrollment
+POST {{baseUrl}}/api/enrollments
+Content-Type: application/json
+Authorization: Bearer {{flowToken}}
+
+{
+  "studentId": 2,
+  "courseId": 1
+}
+
+###
+
+### 5. Registrar asistencia para la inscripción
+POST {{baseUrl}}/api/attendances
+Content-Type: application/json
+Authorization: Bearer {{flowToken}}
+
+{
+  "enrollmentId": 1,
+  "date": "2026-05-08T08:00:00Z",
+  "status": 1,
+  "notes": "Presente - Flujo de prueba"
+}
+
+###
+
+### 6. Registrar una nota para la inscripción
+POST {{baseUrl}}/api/grades
+Content-Type: application/json
+Authorization: Bearer {{flowToken}}
+
+{
+  "enrollmentId": 1,
+  "type": 1,
+  "value": 4.7,
+  "weight": 0.10,
+  "description": "Quiz de prueba - Flow",
+  "evaluatedAt": "2026-05-08T10:00:00Z"
+}
+
+###
+
+### 7. Verificar dashboard actualizado
+GET {{baseUrl}}/api/dashboard/summary
+Authorization: Bearer {{flowToken}}
+
+###
+
+### 8. Ver estadísticas del estudiante
+GET {{baseUrl}}/api/dashboard/students/2
+Authorization: Bearer {{flowToken}}

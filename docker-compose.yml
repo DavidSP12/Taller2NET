@@ -26,7 +26,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./infrastructure/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - taller2-network
     healthcheck:
@@ -166,4 +166,22 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────
+  # FRONTEND
+  # ─────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taller2-frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - taller2-network
+    depends_on:
+      api-gateway:
+        condition: service_healthy
     restart: unless-stopped
