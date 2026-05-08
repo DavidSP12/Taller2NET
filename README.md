@@ -28,7 +28,7 @@
 graph TB
     Client(["🌐 Cliente\n(Browser / Postman)"])
 
-    subgraph Docker Network: taller2-network
+    subgraph "Docker Network: taller2-network"
         GW["🔀 API Gateway\n(YARP · :80)"]
 
         subgraph "Backend Services"
@@ -47,7 +47,7 @@ graph TB
     GW -->|/api/auth /api/students\n/api/courses /api/enrollments| AS
     GW -->|/api/dashboard| SS
     AS -->|EF Core| PG
-    SS -->|EF Core (read)| PG
+    SS -->|EF Core read| PG
     SS -->|Cache| RD
     PGA -->|Admin| PG
 ```
@@ -389,8 +389,27 @@ docker-compose up --scale academic-service=3
 2. **Event-Driven**: Agregar RabbitMQ para notificaciones asíncronas
 3. **CQRS**: Separar lecturas (Statistics) de escrituras (Academic) con ES
 4. **Monitoring**: Agregar Prometheus + Grafana para métricas
-5. **CI/CD**: GitHub Actions para build, test y deploy automático
-6. **Cloud**: Deploy en Azure Container Apps o AWS ECS
+5. **Cloud**: Deploy en Azure Container Apps o AWS ECS
+
+---
+
+## 🤖 Despliegue automático con GitHub Actions
+
+Se agregó el workflow `.github/workflows/deploy.yml` que:
+
+1. Compila y ejecuta pruebas del proyecto en cada push a `main`/`master`.
+2. Si la validación pasa, se conecta por SSH al servidor y actualiza el despliegue con:
+   - `git fetch --all`
+   - `git reset --hard origin/<rama>`
+   - `docker compose up -d --build`
+
+### Secrets requeridos en GitHub
+
+- `SSH_HOST`: host/IP del servidor
+- `SSH_PORT`: puerto SSH (ej. `22`)
+- `SSH_USER`: usuario SSH con permisos de despliegue
+- `SSH_PRIVATE_KEY`: clave privada para autenticación SSH
+- `DEPLOY_PATH`: ruta absoluta del proyecto en el servidor (ej. `/opt/Taller2NET`)
 
 ---
 
