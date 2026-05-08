@@ -1,0 +1,192 @@
+time="2026-05-07T17:28:02Z" level=warning msg="/workspaces/Taller2NET/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.52kB done
+#1 DONE 0.0s
+
+#2 [api-gateway internal] load build definition from Dockerfile
+#2 transferring dockerfile: 688B done
+#2 DONE 0.0s
+
+#3 [statistics-service internal] load build definition from Dockerfile
+#3 transferring dockerfile: 976B done
+#3 DONE 0.0s
+
+#4 [academic-service internal] load build definition from Dockerfile
+#4 transferring dockerfile: 954B done
+#4 DONE 0.0s
+
+#5 [statistics-service internal] load metadata for mcr.microsoft.com/dotnet/aspnet:8.0
+#5 DONE 0.1s
+
+#6 [statistics-service internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [api-gateway internal] load metadata for mcr.microsoft.com/dotnet/sdk:8.0
+#7 DONE 0.2s
+
+#8 [api-gateway build 1/7] FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:4b1cdaa57eed2cecabcf29bdb9bce11e8ca1c287d39dfd2c8b534663ea94d493
+#8 resolve mcr.microsoft.com/dotnet/sdk:8.0@sha256:4b1cdaa57eed2cecabcf29bdb9bce11e8ca1c287d39dfd2c8b534663ea94d493 0.0s done
+#8 DONE 0.0s
+
+#9 [academic-service base 1/2] FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:f88c77644f4c480a62d3b46dc74db8d5472a24e282df8b1e56195c689d35a6db
+#9 resolve mcr.microsoft.com/dotnet/aspnet:8.0@sha256:f88c77644f4c480a62d3b46dc74db8d5472a24e282df8b1e56195c689d35a6db 0.0s done
+#9 DONE 0.0s
+
+#10 [api-gateway internal] load build context
+#10 transferring context: 648B 0.0s done
+#10 DONE 0.0s
+
+#11 [statistics-service internal] load build context
+#11 transferring context: 36.27kB 0.0s done
+#11 DONE 0.0s
+
+#12 [api-gateway publish 1/1] RUN dotnet publish "ApiGateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
+#12 CACHED
+
+#13 [api-gateway build 7/7] RUN dotnet build "ApiGateway.csproj" -c Release -o /app/build
+#13 CACHED
+
+#14 [api-gateway build 6/7] WORKDIR /src/ApiGateway
+#14 CACHED
+
+#15 [api-gateway build 3/7] COPY [src/ApiGateway/ApiGateway.csproj, ApiGateway/]
+#15 CACHED
+
+#16 [api-gateway build 4/7] RUN dotnet restore "ApiGateway/ApiGateway.csproj"
+#16 CACHED
+
+#17 [api-gateway build 5/7] COPY src/ApiGateway/ ApiGateway/
+#17 CACHED
+
+#18 [academic-service internal] load build context
+#18 transferring context: 103.54kB 0.0s done
+#18 DONE 0.0s
+
+#19 [api-gateway final 2/2] COPY --from=publish /app/publish .
+#19 CACHED
+
+#20 [statistics-service build 4/9] COPY [src/Shared/Taller2NET.Shared/Taller2NET.Shared.csproj, Shared/Taller2NET.Shared/]
+#20 CACHED
+
+#21 [statistics-service build 3/9] COPY [src/Services/StatisticsService/StatisticsService.csproj, Services/StatisticsService/]
+#21 CACHED
+
+#22 [statistics-service build 6/9] COPY src/Services/StatisticsService/ Services/StatisticsService/
+#22 CACHED
+
+#23 [statistics-service build 5/9] RUN dotnet restore "Services/StatisticsService/StatisticsService.csproj"
+#23 CACHED
+
+#24 [statistics-service build 8/9] WORKDIR /src/Services/StatisticsService
+#24 CACHED
+
+#25 [statistics-service publish 1/1] RUN dotnet publish "StatisticsService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+#25 CACHED
+
+#26 [statistics-service build 9/9] RUN dotnet build "StatisticsService.csproj" -c Release -o /app/build
+#26 CACHED
+
+#27 [statistics-service build 7/9] COPY src/Shared/Taller2NET.Shared/ Shared/Taller2NET.Shared/
+#27 CACHED
+
+#28 [academic-service build 3/9] COPY [src/Services/AcademicService/AcademicService.csproj, Services/AcademicService/]
+#28 CACHED
+
+#29 [academic-service build 4/9] COPY [src/Shared/Taller2NET.Shared/Taller2NET.Shared.csproj, Shared/Taller2NET.Shared/]
+#29 CACHED
+
+#30 [academic-service final 1/2] WORKDIR /app
+#30 CACHED
+
+#31 [academic-service build 7/9] COPY src/Shared/Taller2NET.Shared/ Shared/Taller2NET.Shared/
+#31 CACHED
+
+#32 [academic-service build 8/9] WORKDIR /src/Services/AcademicService
+#32 CACHED
+
+#33 [academic-service build 5/9] RUN dotnet restore "Services/AcademicService/AcademicService.csproj"
+#33 CACHED
+
+#34 [academic-service build 2/7] WORKDIR /src
+#34 CACHED
+
+#35 [academic-service build 6/9] COPY src/Services/AcademicService/ Services/AcademicService/
+#35 CACHED
+
+#36 [academic-service base 2/2] WORKDIR /app
+#36 CACHED
+
+#37 [academic-service build 9/9] RUN dotnet build "AcademicService.csproj" -c Release -o /app/build
+#37 CACHED
+
+#38 [academic-service publish 1/1] RUN dotnet publish "AcademicService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+#38 CACHED
+
+#39 [academic-service final 2/2] COPY --from=publish /app/publish .
+#39 CACHED
+
+#40 [statistics-service final 2/2] COPY --from=publish /app/publish .
+#40 CACHED
+
+#41 [statistics-service] exporting to image
+#41 exporting layers
+#41 exporting layers done
+#41 exporting manifest sha256:80205b55605b0c50ae652c1e62aeaf967cf88fd54d10cc50bce2c61c7237a439 0.0s done
+#41 exporting config sha256:35c97018c4e9b8e96e1d750c4cc917b9debd7f8e17ebf352429417c30a9259cb done
+#41 exporting attestation manifest sha256:b2c132c2d241b8fb0c7fc786ef4ee38f054cfcf74ba500bfc397b291b9ee9163
+#41 ...
+
+#42 [api-gateway] exporting to image
+#42 exporting layers done
+#42 exporting manifest sha256:f09fece7712a6cb4e2c8765ffd2225d3c840eda7d916b5dfd9873634ec8062b8 done
+#42 exporting config sha256:2b35080591411c1685529697d6e0c1137e74adc085f41f0a92e3b92eed4aab62 done
+#42 exporting attestation manifest sha256:b317db38695da7107cafeed1e99467674e7ef5916b3fa4565d6c8baadc4de6c8 0.1s done
+#42 exporting manifest list sha256:046b2e1133f6c32cb864300d5d3501de31d11c505489ae58b5d15cfd32adf350 0.0s done
+#42 naming to docker.io/library/taller2net-api-gateway:latest done
+#42 unpacking to docker.io/library/taller2net-api-gateway:latest 0.0s done
+#42 DONE 0.2s
+
+#43 [academic-service] exporting to image
+#43 exporting layers done
+#43 exporting manifest sha256:55b12d021793f842eb8e0ba4af4de7a6d961126720100a0ccbe3288d35939b54 done
+#43 exporting config sha256:6983f65bfda936112c73bbc2a4d893f5fbd915d879a8dda3209da4585efb0c73 done
+#43 exporting attestation manifest sha256:0ef26cd8b1d39f01c97324b10547eb9dd303168c586a2f08a4781fa1101839f2 0.1s done
+#43 exporting manifest list sha256:8446735888c57df106d906a7856cce1cad0da8601cc661245bfbfc5ee15c9952 0.0s done
+#43 naming to docker.io/library/taller2net-academic-service:latest done
+#43 unpacking to docker.io/library/taller2net-academic-service:latest 0.0s done
+#43 DONE 0.3s
+
+#41 [statistics-service] exporting to image
+#41 exporting attestation manifest sha256:b2c132c2d241b8fb0c7fc786ef4ee38f054cfcf74ba500bfc397b291b9ee9163 0.1s done
+#41 exporting manifest list sha256:9249c1c539339e2115c4a7150a51eacfa1d804a6b430799c88d6e19753ae6e4a 0.0s done
+#41 naming to docker.io/library/taller2net-statistics-service:latest done
+#41 unpacking to docker.io/library/taller2net-statistics-service:latest 0.0s done
+#41 DONE 0.4s
+
+#44 [api-gateway] resolving provenance for metadata file
+#44 DONE 0.1s
+
+#45 [academic-service] resolving provenance for metadata file
+#45 DONE 0.1s
+
+#46 [statistics-service] resolving provenance for metadata file
+#46 DONE 0.0s
+ taller2net-academic-service  Built
+ taller2net-statistics-service  Built
+ taller2net-api-gateway  Built
+ Container taller2-postgres  Running
+ Container taller2-redis  Running
+ Container taller2-pgadmin  Running
+ Container taller2-academic  Recreate
+ Container taller2-academic  Recreated
+ Container taller2-statistics  Recreate
+ Container taller2-statistics  Recreated
+ Container taller2-gateway  Recreate
+ Container taller2-gateway  Recreated
+Attaching to taller2-academic, taller2-gateway, taller2-pgadmin, taller2-postgres, taller2-redis, taller2-statistics
+taller2-academic  | [17:28:07 INF] Database seeded successfully
+taller2-academic  | [17:28:07 WRN] Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+taller2-academic  | [17:28:07 WRN] No XML encryptor configured. Key {a0e29107-f10e-4e95-96cf-9bcea325513e} may be persisted to storage in unencrypted form.
+taller2-academic  | [17:28:07 WRN] Overriding HTTP_PORTS '8080' and HTTPS_PORTS ''. Binding to values defined by URLS instead 'http://+:8080'.
+dependency failed to start: container taller2-academic is unhealthy

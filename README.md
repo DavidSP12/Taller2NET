@@ -26,25 +26,25 @@
 
 ```mermaid
 graph TB
-    Client(["🌐 Cliente\n(Browser / Postman)"])
+    Client["🌐 Cliente<br/>(Browser / Postman)"]
 
     subgraph "Docker Network: taller2-network"
         GW["🔀 API Gateway\n(YARP · :80)"]
 
         subgraph "Backend Services"
-            AS["📚 Academic Service\n(ASP.NET Core · :8080)"]
-            SS["📊 Statistics Service\n(ASP.NET Core · :8081)"]
+            AS["📚 Academic Service<br/>(ASP.NET Core · :8080)"]
+            SS["📊 Statistics Service<br/>(ASP.NET Core · :8081)"]
         end
 
         subgraph "Infrastructure"
-            PG[("🐘 PostgreSQL\n:5432")]
-            RD[("🔴 Redis Cache\n:6379")]
-            PGA["🖥️ pgAdmin\n:5050"]
+            PG[("🐘 PostgreSQL<br/>:5432")]
+            RD[("🔴 Redis Cache<br/>:6379")]
+            PGA["🖥️ pgAdmin<br/>:5050"]
         end
     end
 
     Client -->|HTTP| GW
-    GW -->|/api/auth /api/students\n/api/courses /api/enrollments| AS
+    GW -->|/api/auth /api/students<br/>/api/courses /api/enrollments| AS
     GW -->|/api/dashboard| SS
     AS -->|EF Core| PG
     SS -->|EF Core read| PG
@@ -53,7 +53,6 @@ graph TB
 ```
 
 ---
-
 ## 📦 Diagrama de Componentes N-Tier
 
 ```mermaid
