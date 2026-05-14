@@ -50,7 +50,9 @@ public class EnrollmentService : IEnrollmentService
         if (existing is not null && existing.Status == EnrollmentStatus.Active)
             return ApiResponse<EnrollmentDto>.Fail("Student already enrolled in this course");
 
-        if (course.Enrollments.Count(e => e.Status == EnrollmentStatus.Active) >= course.MaxStudents)
+        // Use enrollment repository to count active enrollments
+        var enrollmentsForCourse = await _enrollRepo.GetByCourseAsync(course.Id);
+        if (enrollmentsForCourse.Count(e => e.Status == EnrollmentStatus.Active) >= course.MaxStudents)
             return ApiResponse<EnrollmentDto>.Fail("Course is full");
 
         var enrollment = new Enrollment

@@ -38,6 +38,186 @@ function logout() {
   document.getElementById('loginOverlay').classList.remove('hidden');
 }
 
+// --- API Wrappers for CRUD ---
+const CourseApi = {
+  list: (search = '') => fetch(`${API}/api/courses?page=1&pageSize=50&search=${encodeURIComponent(search)}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+  get: id => fetch(`${API}/api/courses/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+  create: (body) => fetch(`${API}/api/courses`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) }).then(r => r.json()),
+  update: (id, body) => fetch(`${API}/api/courses/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) }).then(r => r.json()),
+  delete: (id) => fetch(`${API}/api/courses/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json())
+};
+
+const StudentApi = {
+  list: (search = '') => fetch(`${API}/api/students?page=1&pageSize=50&search=${encodeURIComponent(search)}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+  get: id => fetch(`${API}/api/students/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+  create: (body) => fetch(`${API}/api/students`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) }).then(r => r.json()),
+  update: (id, body) => fetch(`${API}/api/students/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) }).then(r => r.json()),
+  delete: (id) => fetch(`${API}/api/students/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json())
+};
+
+// --- Courses CRUD UI ---
+let courseSearchTimer = null;
+function debouncedLoadCourses() { clearTimeout(courseSearchTimer); courseSearchTimer = setTimeout(loadCoursesCRUD, 300); }
+async function loadCoursesCRUD() {
+  showLoading(true);
+  try {
+    const search = document.getElementById('courseSearch')?.value || '';
+    const res = await CourseApi.list(search);
+    const items = res.data || res || [];
+    renderCoursesTable(items);
+  } catch (e) { console.error(e); document.getElementById('coursesTable').innerHTML = '<p style="padding:20px;color:var(--text-muted)">Error al cargar cursos</p>'; }
+  showLoading(false);
+}
+
+function renderCoursesTable(items) {
+  if (!items.length) { document.getElementById('coursesTable').innerHTML = '<p style="color:var(--text-muted);padding:20px">No hay cursos</p>'; return; }
+  const rows = items.map(c => `<tr>
+    <td><strong>${c.id ?? c.Id ?? ''}</strong></td>
+    <td>${c.code ?? c.Code ?? ''}</td>
+    <td>${c.name ?? c.Name ?? ''}</td>
+    <td>${c.teacher ?? c.Teacher ?? ''}</td>
+    <td>${c.maxStudents ?? c.MaxStudents ?? '-'}</td>
+    <td>
+      <button class="btn-sm" onclick="openCourseForm(${c.id ?? c.Id})">Editar</button>
+      <button class="btn-sm" style="margin-left:6px" onclick="deleteCourse(${c.id ?? c.Id})">Eliminar</button>
+    </td>
+  </tr>`).join('');
+  document.getElementById('coursesTable').innerHTML = `<table><thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Profesor</th><th>Máx</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function openCourseForm(id) {
+  const isEdit = !!id;
+  const defaultData = { code:'', name:'', description:'', credits:3, teacher:'', semester:1, maxStudents:30, schedule:'', isActive:true };
+  let data = defaultData;
+  if (isEdit) {
+    const res = await CourseApi.get(id);
+    if (!res.success) return alert(res.message || 'No se encontró el curso');
+    data = res.data;
+  }
+  const formHtml = `
+    <div style="padding:20px;color:var(--text-primary);">
+      <label>Código<br><input id="f_code" value="${escapeHtml(data.code ?? data.Code ?? '')}" class="input-sm"></label><br>
+      <label>Nombre<br><input id="f_name" value="${escapeHtml(data.name ?? data.Name ?? '')}" class="input-sm"></label><br>
+      <label>Profesor<br><input id="f_teacher" value="${escapeHtml(data.teacher ?? data.Teacher ?? '')}" class="input-sm"></label><br>
+      <label>Créditos<br><input id="f_credits" type="number" value="${data.credits ?? data.Credits ?? 3}" class="input-sm"></label><br>
+      <label>Máx Estudiantes<br><input id="f_max" type="number" value="${data.maxStudents ?? data.MaxStudents ?? 30}" class="input-sm"></label><br>
+      <label>Semestre<br><input id="f_semester" type="number" value="${data.semester ?? data.Semester ?? 1}" class="input-sm"></label><br>
+      <label>Descripción<br><textarea id="f_desc" class="input-sm" style="height:80px">${escapeHtml(data.description ?? data.Description ?? '')}</textarea></label><br>
+      <div style="margin-top:8px">
+        <button class="btn-sm" onclick="submitCourseForm(${isEdit ? id : 0})">Guardar</button>
+        <button class="btn-sm" style="margin-left:8px" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>`;
+  showModal(isEdit ? 'Editar Curso' : 'Crear Curso', formHtml);
+}
+
+async function submitCourseForm(id) {
+  const body = {
+    Code: document.getElementById('f_code').value,
+    Name: document.getElementById('f_name').value,
+    Description: document.getElementById('f_desc').value,
+    Credits: parseInt(document.getElementById('f_credits').value || '0'),
+    Teacher: document.getElementById('f_teacher').value,
+    Semester: parseInt(document.getElementById('f_semester').value || '1'),
+    MaxStudents: parseInt(document.getElementById('f_max').value || '0'),
+    Schedule: ''
+  };
+  let res;
+  if (id && id !== 0) res = await CourseApi.update(id, body); else res = await CourseApi.create(body);
+  if (!res.success) return alert(res.message || 'Error');
+  closeModal(); loadCoursesCRUD();
+}
+
+async function deleteCourse(id) {
+  if (!confirm('Confirmar eliminar curso?')) return;
+  const res = await CourseApi.delete(id);
+  if (!res.success) return alert(res.message || 'Error');
+  loadCoursesCRUD();
+}
+
+// --- Students CRUD UI ---
+let studentSearchTimer = null;
+function debouncedLoadStudents() { clearTimeout(studentSearchTimer); studentSearchTimer = setTimeout(loadStudentsCRUD, 300); }
+async function loadStudentsCRUD() {
+  showLoading(true);
+  try {
+    const search = document.getElementById('studentSearch')?.value || '';
+    const res = await StudentApi.list(search);
+    const items = res.data || res || [];
+    renderStudentsTable(items);
+  } catch (e) { console.error(e); document.getElementById('studentsTable').innerHTML = '<p style="padding:20px;color:var(--text-muted)">Error al cargar estudiantes</p>'; }
+  showLoading(false);
+}
+
+function renderStudentsTable(items) {
+  if (!items.length) { document.getElementById('studentsTable').innerHTML = '<p style="color:var(--text-muted);padding:20px">No hay estudiantes</p>'; return; }
+  const rows = items.map(s => `<tr>
+    <td><strong>${s.id ?? s.Id ?? ''}</strong></td>
+    <td>${s.studentCode ?? s.StudentCode ?? ''}</td>
+    <td>${s.fullName ?? s.FullName ?? s.name ?? s.Name ?? ''}</td>
+    <td>${s.program ?? s.Program ?? ''}</td>
+    <td>
+      <button class="btn-sm" onclick="openStudentForm(${s.id ?? s.Id})">Editar</button>
+      <button class="btn-sm" style="margin-left:6px" onclick="deleteStudent(${s.id ?? s.Id})">Eliminar</button>
+    </td>
+  </tr>`).join('');
+  document.getElementById('studentsTable').innerHTML = `<table><thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Programa</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function openStudentForm(id) {
+  const isEdit = !!id;
+  let data = { studentCode:'', fullName:'', program:'', email:'' };
+  if (isEdit) {
+    const res = await StudentApi.get(id);
+    if (!res.success) return alert(res.message || 'No se encontró el estudiante');
+    data = res.data;
+  }
+  const formHtml = `
+    <div style="padding:20px;color:var(--text-primary);">
+      <label>Código<br><input id="s_code" value="${escapeHtml(data.studentCode ?? data.StudentCode ?? '')}" class="input-sm"></label><br>
+      <label>Nombre<br><input id="s_name" value="${escapeHtml(data.fullName ?? data.FullName ?? data.name ?? data.Name ?? '')}" class="input-sm"></label><br>
+      <label>Programa<br><input id="s_program" value="${escapeHtml(data.program ?? data.Program ?? '')}" class="input-sm"></label><br>
+      <label>Email<br><input id="s_email" value="${escapeHtml(data.email ?? data.Email ?? '')}" class="input-sm"></label><br>
+      <div style="margin-top:8px">
+        <button class="btn-sm" onclick="submitStudentForm(${isEdit ? id : 0})">Guardar</button>
+        <button class="btn-sm" style="margin-left:8px" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>`;
+  showModal(isEdit ? 'Editar Estudiante' : 'Crear Estudiante', formHtml);
+}
+
+async function submitStudentForm(id) {
+  const body = {
+    StudentCode: document.getElementById('s_code').value,
+    FullName: document.getElementById('s_name').value,
+    Program: document.getElementById('s_program').value,
+    Email: document.getElementById('s_email').value
+  };
+  let res;
+  if (id && id !== 0) res = await StudentApi.update(id, body); else res = await StudentApi.create(body);
+  if (!res.success) return alert(res.message || 'Error');
+  closeModal(); loadStudentsCRUD();
+}
+
+async function deleteStudent(id) {
+  if (!confirm('Confirmar eliminar estudiante?')) return;
+  const res = await StudentApi.delete(id);
+  if (!res.success) return alert(res.message || 'Error');
+  loadStudentsCRUD();
+}
+
+// --- Simple modal helper ---
+function showModal(title, html) {
+  const overlay = document.createElement('div'); overlay.id = 'modalOverlay'; overlay.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:200;';
+  const card = document.createElement('div'); card.style = 'background:var(--bg-card);border:1px solid var(--border);border-radius:12px;max-width:640px;width:100%;';
+  card.innerHTML = `<div style="padding:14px 18px;border-bottom:1px solid var(--border);font-weight:600">${title}</div><div>${html}</div>`;
+  overlay.appendChild(card); document.body.appendChild(overlay);
+}
+function closeModal() { const el = document.getElementById('modalOverlay'); if (el) el.remove(); }
+
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+
 // --- API Helper ---
 async function api(path) {
   const res = await fetch(`${API}${path}`, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -59,7 +239,7 @@ function showSection(name) {
   };
   document.getElementById('sectionTitle').textContent = titles[name] || '';
   const loaders = {
-    summary: loadSummary, courses: loadCourses, students: loadStudents,
+    summary: loadSummary, courses: loadCoursesCRUD, students: loadStudentsCRUD,
     'top-courses': loadTopCourses, attendance: loadAttendance,
     grades: loadGrades, activity: loadActivity, programs: loadPrograms
   };
