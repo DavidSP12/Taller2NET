@@ -91,5 +91,5 @@ public class CourseService : ICourseService
     private static CourseDto MapToDto(Course c) => new(
         c.Id, c.Code, c.Name, c.Description, c.Credits, c.Teacher, c.Semester,
         c.MaxStudents, c.Schedule, c.IsActive,
-        c.Enrollments.Count(e => e.Status == EnrollmentStatus.Active));
+        c.EnrolledCount);
 }

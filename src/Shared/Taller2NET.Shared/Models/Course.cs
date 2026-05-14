@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Taller2NET.Shared.Models;
 
 public class Course
@@ -14,6 +16,9 @@ public class Course
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+
+    [NotMapped]
+    public int EnrolledCount { get; set; }
 
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

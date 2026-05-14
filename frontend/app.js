@@ -68,21 +68,24 @@ function logout() {
   document.getElementById('loginOverlay').classList.remove('hidden');
 }
 
-// --- API Helper ---
-async function api(path) {
+const API = window.location.origin;
+
+async function api(path, options = {}) {
   const res = await fetch(`${API}${path}`, {
+    ...options,
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {})
     }
   });
 
   if (res.status === 401) {
     logout();
-    throw new Error('Sesión expirada');
+    throw new Error("Sesión expirada");
   }
 
-  const payload = await res.json().catch(() => ({}));
+  const payload = await res.json().catch(() => null);
   if (!res.ok || payload?.success === false) {
     throw new Error(payload?.message || `HTTP ${res.status}`);
   }

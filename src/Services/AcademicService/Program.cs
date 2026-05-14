@@ -25,8 +25,8 @@ builder.Services.AddDbContext<AcademicDbContext>(options =>
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IStudentRepository, AdoStudentRepository>();
+builder.Services.AddScoped<ICourseRepository, AdoCourseRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();

@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Taller2NET LMS responsive para presentación académica" />
+    <title>Taller2NET LMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html><!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -26,10 +41,6 @@
         <div class="form-group">
           <label for="password">Contraseña</label>
           <input type="password" id="password" value="Admin@123" required>
-        </div>
-        <div class="form-group">
-          <label for="apiBaseUrl">API Base URL</label>
-          <input type="text" id="apiBaseUrl" placeholder="http://localhost">
         </div>
         <button type="submit" id="loginBtn" class="btn-primary">Iniciar Sesión</button>
         <p id="loginError" class="error-msg"></p>
