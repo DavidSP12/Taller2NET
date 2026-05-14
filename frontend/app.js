@@ -1,15 +1,34 @@
-const API = 'http://localhost';
+// Detectar API URL dinámicamente
+const getAPIUrl = () => {
+  const hostname = window.location.hostname;
+  
+  // Si es localhost, usar localhost directamente
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost';
+  }
+  
+  // En Codespaces u otros entornos, usar URLs relativas (/api)
+  // El nginx proxy redirige /api/ al gateway
+  return '';
+};
+
+const API = getAPIUrl();
 let token = '';
 let currentSection = 'summary';
 
 // --- Auth ---
+console.log('Frontend initialized. Hostname:', window.location.hostname);
+console.log('Detected API URL:', API);
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = document.getElementById('loginBtn');
   const errEl = document.getElementById('loginError');
   btn.disabled = true; btn.textContent = 'Ingresando...'; errEl.textContent = '';
   try {
-    const res = await fetch(`${API}/api/auth/login`, {
+    const loginUrl = `${API}/api/auth/login`;
+    console.log('Attempting login at:', loginUrl);
+    const res = await fetch(loginUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -17,7 +36,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         password: document.getElementById('password').value
       })
     });
+    console.log('Response status:', res.status);
     const data = await res.json();
+    console.log('Response data:', data);
     if (!res.ok || !data.success) throw new Error(data.message || 'Credenciales inválidas');
     token = data.data.token;
     document.getElementById('userName').textContent = data.data.username;
@@ -26,6 +47,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     document.getElementById('app').classList.remove('hidden');
     showSection('summary');
   } catch (err) {
+    console.error('Login error:', err);
     errEl.textContent = err.message;
   } finally {
     btn.disabled = false; btn.textContent = 'Iniciar Sesión';
