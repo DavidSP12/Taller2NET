@@ -30,6 +30,9 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
+builder.Services.AddScoped<IEnrollmentCrudRepository, EnrollmentCrudRepository>();
+builder.Services.AddScoped<IAttendanceCrudRepository, AttendanceCrudRepository>();
+builder.Services.AddScoped<IGradeCrudRepository, GradeCrudRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();

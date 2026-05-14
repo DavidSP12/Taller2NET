@@ -27,6 +27,10 @@
           <label for="password">Contraseña</label>
           <input type="password" id="password" value="Admin@123" required>
         </div>
+        <div class="form-group">
+          <label for="apiBaseUrl">API Base URL</label>
+          <input type="text" id="apiBaseUrl" placeholder="http://localhost">
+        </div>
         <button type="submit" id="loginBtn" class="btn-primary">Iniciar Sesión</button>
         <p id="loginError" class="error-msg"></p>
         <div class="credentials-hint">
@@ -68,6 +72,7 @@
       <header class="top-bar">
         <h2 id="sectionTitle">Resumen General</h2>
         <div class="top-bar-actions">
+          <span id="globalError" class="global-error hidden"></span>
           <span id="cacheSource" class="cache-badge"></span>
           <button class="btn-refresh" onclick="refreshCurrentSection()">🔄 Refrescar</button>
         </div>
