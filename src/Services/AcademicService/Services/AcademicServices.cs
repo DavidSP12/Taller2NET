@@ -159,31 +159,22 @@ public class AttendanceService : IAttendanceService
     public async Task<ApiResponse<IEnumerable<AttendanceDto>>> GetAllAsync()
     {
         var items = await _repo.GetAllAsync();
-        var mapped = new List<AttendanceDto>();
-
-        foreach (var item in items)
-        {
-            var enrollment = await _enrollRepo.GetByIdAsync(item.EnrollmentId);
-            if (enrollment?.Student is null || enrollment.Course is null) continue;
-            mapped.Add(new AttendanceDto(
-                item.Id, enrollment.Id, enrollment.Student.Id, $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
-                enrollment.Course.Id, enrollment.Course.Name, item.Date, item.Status, item.Notes));
-        }
-
-        return ApiResponse<IEnumerable<AttendanceDto>>.Ok(mapped);
+        return ApiResponse<IEnumerable<AttendanceDto>>.Ok(items
+            .Where(item => item.Enrollment?.Student is not null && item.Enrollment.Course is not null)
+            .Select(item => new AttendanceDto(
+                item.Id, item.Enrollment!.Id, item.Enrollment.Student!.Id, $"{item.Enrollment.Student.FirstName} {item.Enrollment.Student.LastName}",
+                item.Enrollment.Course!.Id, item.Enrollment.Course.Name, item.Date, item.Status, item.Notes)));
     }
 
     public async Task<ApiResponse<AttendanceDto>> GetByIdAsync(int attendanceId)
     {
         var attendance = await _repo.GetByIdAsync(attendanceId);
         if (attendance is null) return ApiResponse<AttendanceDto>.Fail("Attendance not found");
-
-        var enrollment = await _enrollRepo.GetByIdAsync(attendance.EnrollmentId);
-        if (enrollment?.Student is null || enrollment.Course is null) return ApiResponse<AttendanceDto>.Fail("Enrollment not found");
+        if (attendance.Enrollment?.Student is null || attendance.Enrollment.Course is null) return ApiResponse<AttendanceDto>.Fail("Enrollment not found");
 
         return ApiResponse<AttendanceDto>.Ok(new AttendanceDto(
-            attendance.Id, enrollment.Id, enrollment.Student.Id, $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
-            enrollment.Course.Id, enrollment.Course.Name, attendance.Date, attendance.Status, attendance.Notes));
+            attendance.Id, attendance.Enrollment.Id, attendance.Enrollment.Student.Id, $"{attendance.Enrollment.Student.FirstName} {attendance.Enrollment.Student.LastName}",
+            attendance.Enrollment.Course.Id, attendance.Enrollment.Course.Name, attendance.Date, attendance.Status, attendance.Notes));
     }
 
     public async Task<ApiResponse<AttendanceDto>> RecordAsync(CreateAttendanceDto dto)
@@ -264,31 +255,22 @@ public class GradeService : IGradeService
     public async Task<ApiResponse<IEnumerable<GradeDto>>> GetAllAsync()
     {
         var items = await _repo.GetAllAsync();
-        var mapped = new List<GradeDto>();
-
-        foreach (var item in items)
-        {
-            var enrollment = await _enrollRepo.GetByIdAsync(item.EnrollmentId);
-            if (enrollment?.Student is null || enrollment.Course is null) continue;
-            mapped.Add(new GradeDto(
-                item.Id, enrollment.Id, enrollment.Student.Id, $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
-                enrollment.Course.Id, enrollment.Course.Name, item.Type, item.Value, item.Weight, item.Description, item.EvaluatedAt));
-        }
-
-        return ApiResponse<IEnumerable<GradeDto>>.Ok(mapped);
+        return ApiResponse<IEnumerable<GradeDto>>.Ok(items
+            .Where(item => item.Enrollment?.Student is not null && item.Enrollment.Course is not null)
+            .Select(item => new GradeDto(
+                item.Id, item.Enrollment!.Id, item.Enrollment.Student!.Id, $"{item.Enrollment.Student.FirstName} {item.Enrollment.Student.LastName}",
+                item.Enrollment.Course!.Id, item.Enrollment.Course.Name, item.Type, item.Value, item.Weight, item.Description, item.EvaluatedAt)));
     }
 
     public async Task<ApiResponse<GradeDto>> GetByIdAsync(int gradeId)
     {
         var grade = await _repo.GetByIdAsync(gradeId);
         if (grade is null) return ApiResponse<GradeDto>.Fail("Grade not found");
-
-        var enrollment = await _enrollRepo.GetByIdAsync(grade.EnrollmentId);
-        if (enrollment?.Student is null || enrollment.Course is null) return ApiResponse<GradeDto>.Fail("Enrollment not found");
+        if (grade.Enrollment?.Student is null || grade.Enrollment.Course is null) return ApiResponse<GradeDto>.Fail("Enrollment not found");
 
         return ApiResponse<GradeDto>.Ok(new GradeDto(
-            grade.Id, enrollment.Id, enrollment.Student.Id, $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
-            enrollment.Course.Id, enrollment.Course.Name, grade.Type, grade.Value, grade.Weight, grade.Description, grade.EvaluatedAt));
+            grade.Id, grade.Enrollment.Id, grade.Enrollment.Student.Id, $"{grade.Enrollment.Student.FirstName} {grade.Enrollment.Student.LastName}",
+            grade.Enrollment.Course.Id, grade.Enrollment.Course.Name, grade.Type, grade.Value, grade.Weight, grade.Description, grade.EvaluatedAt));
     }
 
     public async Task<ApiResponse<GradeDto>> AddGradeAsync(CreateGradeDto dto)

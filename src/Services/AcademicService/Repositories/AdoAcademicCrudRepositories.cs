@@ -168,9 +168,7 @@ public class EnrollmentCrudRepository : IEnrollmentCrudRepository
 
         while (await reader.ReadAsync())
         {
-            var status = Enum.TryParse<EnrollmentStatus>(reader.GetString(3), true, out var parsedStatus)
-                ? parsedStatus
-                : EnrollmentStatus.Active;
+            var status = ParseEnumOrThrow<EnrollmentStatus>(reader.GetString(3));
 
             items.Add(new Enrollment
             {
@@ -198,6 +196,12 @@ public class EnrollmentCrudRepository : IEnrollmentCrudRepository
 
         return items;
     }
+
+    private static TEnum ParseEnumOrThrow<TEnum>(string value) where TEnum : struct, Enum
+    {
+        if (Enum.TryParse<TEnum>(value, true, out var parsed)) return parsed;
+        throw new InvalidDataException($"Invalid enum value '{value}' for {typeof(TEnum).Name}");
+    }
 }
 
 public class AttendanceCrudRepository : IAttendanceCrudRepository
@@ -212,25 +216,43 @@ public class AttendanceCrudRepository : IAttendanceCrudRepository
 
     public async Task<IEnumerable<Attendance>> GetAllAsync() =>
         await QueryAttendancesAsync("""
-            SELECT "Id", "EnrollmentId", "Date", "Status", "Notes", "CreatedAt"
-            FROM "Attendances"
-            ORDER BY "Date" DESC, "Id" DESC
+            SELECT a."Id", a."EnrollmentId", a."Date", a."Status", a."Notes", a."CreatedAt",
+                   e."StudentId", e."CourseId",
+                   s."FirstName", s."LastName",
+                   c."Name", c."Code"
+            FROM "Attendances" a
+            JOIN "Enrollments" e ON e."Id" = a."EnrollmentId"
+            JOIN "Students" s ON s."Id" = e."StudentId"
+            JOIN "Courses" c ON c."Id" = e."CourseId"
+            ORDER BY a."Date" DESC, a."Id" DESC
             """);
 
     public async Task<IEnumerable<Attendance>> GetByEnrollmentAsync(int enrollmentId) =>
         await QueryAttendancesAsync("""
-            SELECT "Id", "EnrollmentId", "Date", "Status", "Notes", "CreatedAt"
-            FROM "Attendances"
-            WHERE "EnrollmentId" = @enrollmentId
-            ORDER BY "Date" DESC, "Id" DESC
+            SELECT a."Id", a."EnrollmentId", a."Date", a."Status", a."Notes", a."CreatedAt",
+                   e."StudentId", e."CourseId",
+                   s."FirstName", s."LastName",
+                   c."Name", c."Code"
+            FROM "Attendances" a
+            JOIN "Enrollments" e ON e."Id" = a."EnrollmentId"
+            JOIN "Students" s ON s."Id" = e."StudentId"
+            JOIN "Courses" c ON c."Id" = e."CourseId"
+            WHERE a."EnrollmentId" = @enrollmentId
+            ORDER BY a."Date" DESC, a."Id" DESC
             """, new NpgsqlParameter("@enrollmentId", enrollmentId));
 
     public async Task<Attendance?> GetByIdAsync(int id)
     {
         var result = await QueryAttendancesAsync("""
-            SELECT "Id", "EnrollmentId", "Date", "Status", "Notes", "CreatedAt"
-            FROM "Attendances"
-            WHERE "Id" = @id
+            SELECT a."Id", a."EnrollmentId", a."Date", a."Status", a."Notes", a."CreatedAt",
+                   e."StudentId", e."CourseId",
+                   s."FirstName", s."LastName",
+                   c."Name", c."Code"
+            FROM "Attendances" a
+            JOIN "Enrollments" e ON e."Id" = a."EnrollmentId"
+            JOIN "Students" s ON s."Id" = e."StudentId"
+            JOIN "Courses" c ON c."Id" = e."CourseId"
+            WHERE a."Id" = @id
             """, new NpgsqlParameter("@id", id));
         return result.FirstOrDefault();
     }
@@ -292,9 +314,7 @@ public class AttendanceCrudRepository : IAttendanceCrudRepository
 
         while (await reader.ReadAsync())
         {
-            var status = Enum.TryParse<AttendanceStatus>(reader.GetString(3), true, out var parsedStatus)
-                ? parsedStatus
-                : AttendanceStatus.Present;
+            var status = ParseEnumOrThrow<AttendanceStatus>(reader.GetString(3));
 
             items.Add(new Attendance
             {
@@ -303,11 +323,35 @@ public class AttendanceCrudRepository : IAttendanceCrudRepository
                 Date = reader.GetDateTime(2),
                 Status = status,
                 Notes = reader.IsDBNull(4) ? null : reader.GetString(4),
-                CreatedAt = reader.GetDateTime(5)
+                CreatedAt = reader.GetDateTime(5),
+                Enrollment = new Enrollment
+                {
+                    Id = reader.GetInt32(1),
+                    StudentId = reader.GetInt32(6),
+                    CourseId = reader.GetInt32(7),
+                    Student = new Student
+                    {
+                        Id = reader.GetInt32(6),
+                        FirstName = reader.GetString(8),
+                        LastName = reader.GetString(9)
+                    },
+                    Course = new Course
+                    {
+                        Id = reader.GetInt32(7),
+                        Name = reader.GetString(10),
+                        Code = reader.GetString(11)
+                    }
+                }
             });
         }
 
         return items;
+    }
+
+    private static TEnum ParseEnumOrThrow<TEnum>(string value) where TEnum : struct, Enum
+    {
+        if (Enum.TryParse<TEnum>(value, true, out var parsed)) return parsed;
+        throw new InvalidDataException($"Invalid enum value '{value}' for {typeof(TEnum).Name}");
     }
 }
 
@@ -323,25 +367,43 @@ public class GradeCrudRepository : IGradeCrudRepository
 
     public async Task<IEnumerable<Grade>> GetAllAsync() =>
         await QueryGradesAsync("""
-            SELECT "Id", "EnrollmentId", "Type", "Value", "Weight", "Description", "EvaluatedAt", "CreatedAt"
-            FROM "Grades"
-            ORDER BY "EvaluatedAt" DESC, "Id" DESC
+            SELECT g."Id", g."EnrollmentId", g."Type", g."Value", g."Weight", g."Description", g."EvaluatedAt", g."CreatedAt",
+                   e."StudentId", e."CourseId",
+                   s."FirstName", s."LastName",
+                   c."Name", c."Code"
+            FROM "Grades" g
+            JOIN "Enrollments" e ON e."Id" = g."EnrollmentId"
+            JOIN "Students" s ON s."Id" = e."StudentId"
+            JOIN "Courses" c ON c."Id" = e."CourseId"
+            ORDER BY g."EvaluatedAt" DESC, g."Id" DESC
             """);
 
     public async Task<IEnumerable<Grade>> GetByEnrollmentAsync(int enrollmentId) =>
         await QueryGradesAsync("""
-            SELECT "Id", "EnrollmentId", "Type", "Value", "Weight", "Description", "EvaluatedAt", "CreatedAt"
-            FROM "Grades"
-            WHERE "EnrollmentId" = @enrollmentId
-            ORDER BY "EvaluatedAt" DESC, "Id" DESC
+            SELECT g."Id", g."EnrollmentId", g."Type", g."Value", g."Weight", g."Description", g."EvaluatedAt", g."CreatedAt",
+                   e."StudentId", e."CourseId",
+                   s."FirstName", s."LastName",
+                   c."Name", c."Code"
+            FROM "Grades" g
+            JOIN "Enrollments" e ON e."Id" = g."EnrollmentId"
+            JOIN "Students" s ON s."Id" = e."StudentId"
+            JOIN "Courses" c ON c."Id" = e."CourseId"
+            WHERE g."EnrollmentId" = @enrollmentId
+            ORDER BY g."EvaluatedAt" DESC, g."Id" DESC
             """, new NpgsqlParameter("@enrollmentId", enrollmentId));
 
     public async Task<Grade?> GetByIdAsync(int id)
     {
         var result = await QueryGradesAsync("""
-            SELECT "Id", "EnrollmentId", "Type", "Value", "Weight", "Description", "EvaluatedAt", "CreatedAt"
-            FROM "Grades"
-            WHERE "Id" = @id
+            SELECT g."Id", g."EnrollmentId", g."Type", g."Value", g."Weight", g."Description", g."EvaluatedAt", g."CreatedAt",
+                   e."StudentId", e."CourseId",
+                   s."FirstName", s."LastName",
+                   c."Name", c."Code"
+            FROM "Grades" g
+            JOIN "Enrollments" e ON e."Id" = g."EnrollmentId"
+            JOIN "Students" s ON s."Id" = e."StudentId"
+            JOIN "Courses" c ON c."Id" = e."CourseId"
+            WHERE g."Id" = @id
             """, new NpgsqlParameter("@id", id));
         return result.FirstOrDefault();
     }
@@ -407,9 +469,7 @@ public class GradeCrudRepository : IGradeCrudRepository
 
         while (await reader.ReadAsync())
         {
-            var type = Enum.TryParse<GradeType>(reader.GetString(2), true, out var parsedType)
-                ? parsedType
-                : GradeType.Assignment;
+            var type = ParseEnumOrThrow<GradeType>(reader.GetString(2));
 
             items.Add(new Grade
             {
@@ -420,10 +480,34 @@ public class GradeCrudRepository : IGradeCrudRepository
                 Weight = reader.GetDecimal(4),
                 Description = reader.IsDBNull(5) ? null : reader.GetString(5),
                 EvaluatedAt = reader.GetDateTime(6),
-                CreatedAt = reader.GetDateTime(7)
+                CreatedAt = reader.GetDateTime(7),
+                Enrollment = new Enrollment
+                {
+                    Id = reader.GetInt32(1),
+                    StudentId = reader.GetInt32(8),
+                    CourseId = reader.GetInt32(9),
+                    Student = new Student
+                    {
+                        Id = reader.GetInt32(8),
+                        FirstName = reader.GetString(10),
+                        LastName = reader.GetString(11)
+                    },
+                    Course = new Course
+                    {
+                        Id = reader.GetInt32(9),
+                        Name = reader.GetString(12),
+                        Code = reader.GetString(13)
+                    }
+                }
             });
         }
 
         return items;
+    }
+
+    private static TEnum ParseEnumOrThrow<TEnum>(string value) where TEnum : struct, Enum
+    {
+        if (Enum.TryParse<TEnum>(value, true, out var parsed)) return parsed;
+        throw new InvalidDataException($"Invalid enum value '{value}' for {typeof(TEnum).Name}");
     }
 }
