@@ -142,6 +142,10 @@ body {
 }
 .cache-badge.database { background: rgba(9,132,227,0.15); color: var(--blue); }
 .cache-badge.cache { background: rgba(0,206,201,0.15); color: var(--cyan); }
+.global-error {
+  font-size: 11px; padding: 4px 10px; border-radius: 20px;
+  background: rgba(225,112,85,0.15); color: var(--red);
+}
 
 .btn-refresh {
   padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border);

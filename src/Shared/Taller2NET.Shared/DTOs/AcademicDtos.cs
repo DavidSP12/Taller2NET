@@ -19,6 +19,11 @@ public record CreateEnrollmentDto(
     int CourseId
 );
 
+public record UpdateEnrollmentDto(
+    EnrollmentStatus Status,
+    DateTime? WithdrawnAt
+);
+
 public record AttendanceDto(
     int Id,
     int EnrollmentId,
@@ -33,6 +38,12 @@ public record AttendanceDto(
 
 public record CreateAttendanceDto(
     int EnrollmentId,
+    DateTime Date,
+    AttendanceStatus Status,
+    string? Notes
+);
+
+public record UpdateAttendanceDto(
     DateTime Date,
     AttendanceStatus Status,
     string? Notes
@@ -54,6 +65,14 @@ public record GradeDto(
 
 public record CreateGradeDto(
     int EnrollmentId,
+    GradeType Type,
+    decimal Value,
+    decimal Weight,
+    string? Description,
+    DateTime EvaluatedAt
+);
+
+public record UpdateGradeDto(
     GradeType Type,
     decimal Value,
     decimal Weight,
