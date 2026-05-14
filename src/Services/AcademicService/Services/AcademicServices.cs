@@ -114,10 +114,7 @@ public class EnrollmentService : IEnrollmentService
         enrollment.Status = dto.Status;
         enrollment.WithdrawnAt = dto.WithdrawnAt?.ToUniversalTime();
         await _enrollRepo.UpdateAsync(enrollment);
-
-        var updated = await _enrollRepo.GetByIdAsync(enrollmentId);
-        if (updated is null) return ApiResponse<EnrollmentDto>.Fail("Enrollment not found");
-        return ApiResponse<EnrollmentDto>.Ok(MapToDto(updated, updated.Student!, updated.Course!), "Enrollment updated successfully");
+        return ApiResponse<EnrollmentDto>.Ok(MapToDto(enrollment, enrollment.Student!, enrollment.Course!), "Enrollment updated successfully");
     }
 
     public async Task<ApiResponse<bool>> DeleteAsync(int enrollmentId)
@@ -218,18 +215,16 @@ public class AttendanceService : IAttendanceService
     {
         var attendance = await _repo.GetByIdAsync(attendanceId);
         if (attendance is null) return ApiResponse<AttendanceDto>.Fail("Attendance not found");
+        if (attendance.Enrollment?.Student is null || attendance.Enrollment.Course is null) return ApiResponse<AttendanceDto>.Fail("Enrollment not found");
 
         attendance.Date = dto.Date.ToUniversalTime();
         attendance.Status = dto.Status;
         attendance.Notes = dto.Notes;
         await _repo.UpdateAsync(attendance);
 
-        var enrollment = await _enrollRepo.GetByIdAsync(attendance.EnrollmentId);
-        if (enrollment?.Student is null || enrollment.Course is null) return ApiResponse<AttendanceDto>.Fail("Enrollment not found");
-
         return ApiResponse<AttendanceDto>.Ok(new AttendanceDto(
-            attendance.Id, enrollment.Id, enrollment.Student.Id, $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
-            enrollment.Course.Id, enrollment.Course.Name, attendance.Date, attendance.Status, attendance.Notes), "Attendance updated successfully");
+            attendance.Id, attendance.Enrollment.Id, attendance.Enrollment.Student.Id, $"{attendance.Enrollment.Student.FirstName} {attendance.Enrollment.Student.LastName}",
+            attendance.Enrollment.Course.Id, attendance.Enrollment.Course.Name, attendance.Date, attendance.Status, attendance.Notes), "Attendance updated successfully");
     }
 
     public async Task<ApiResponse<bool>> DeleteAsync(int attendanceId)
@@ -317,6 +312,7 @@ public class GradeService : IGradeService
     {
         var grade = await _repo.GetByIdAsync(gradeId);
         if (grade is null) return ApiResponse<GradeDto>.Fail("Grade not found");
+        if (grade.Enrollment?.Student is null || grade.Enrollment.Course is null) return ApiResponse<GradeDto>.Fail("Enrollment not found");
 
         grade.Type = dto.Type;
         grade.Value = dto.Value;
@@ -325,12 +321,9 @@ public class GradeService : IGradeService
         grade.EvaluatedAt = dto.EvaluatedAt.ToUniversalTime();
         await _repo.UpdateAsync(grade);
 
-        var enrollment = await _enrollRepo.GetByIdAsync(grade.EnrollmentId);
-        if (enrollment?.Student is null || enrollment.Course is null) return ApiResponse<GradeDto>.Fail("Enrollment not found");
-
         return ApiResponse<GradeDto>.Ok(new GradeDto(
-            grade.Id, enrollment.Id, enrollment.Student.Id, $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
-            enrollment.Course.Id, enrollment.Course.Name, grade.Type, grade.Value, grade.Weight, grade.Description, grade.EvaluatedAt), "Grade updated successfully");
+            grade.Id, grade.Enrollment.Id, grade.Enrollment.Student.Id, $"{grade.Enrollment.Student.FirstName} {grade.Enrollment.Student.LastName}",
+            grade.Enrollment.Course.Id, grade.Enrollment.Course.Name, grade.Type, grade.Value, grade.Weight, grade.Description, grade.EvaluatedAt), "Grade updated successfully");
     }
 
     public async Task<ApiResponse<bool>> DeleteAsync(int gradeId)
