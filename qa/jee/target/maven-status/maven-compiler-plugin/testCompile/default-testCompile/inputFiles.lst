@@ -1,0 +1,8 @@
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/api/AuthResourceIT.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/api/BaseApiTest.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/api/CoursesResourceIT.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/api/DashboardResourceIT.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/api/StudentsResourceIT.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/service/AuthServiceTest.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/service/CourseServiceTest.java
+/workspaces/Taller2NET/qa/jee/src/test/java/com/taller4/service/StudentServiceTest.java

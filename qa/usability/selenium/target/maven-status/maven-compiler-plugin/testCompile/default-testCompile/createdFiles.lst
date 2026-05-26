@@ -1,0 +1,4 @@
+com/taller4/ui/BaseUiTest.class
+com/taller4/ui/DashboardUsabilityTest.class
+com/taller4/ui/pages/LoginPage.class
+com/taller4/ui/pages/DashboardPage.class

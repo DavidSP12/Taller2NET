@@ -1,0 +1,8 @@
+com/taller4/api/DashboardResourceIT.class
+com/taller4/api/CoursesResourceIT.class
+com/taller4/service/CourseServiceTest.class
+com/taller4/service/AuthServiceTest.class
+com/taller4/api/BaseApiTest.class
+com/taller4/api/StudentsResourceIT.class
+com/taller4/service/StudentServiceTest.class
+com/taller4/api/AuthResourceIT.class

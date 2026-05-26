@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.taller4.service.AuthServiceTest" time="0.842" tests="1" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="25"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/workspaces/Taller2NET/qa/jee/target/test-classes:/workspaces/Taller2NET/qa/jee/target/classes:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.2/junit-jupiter-5.10.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.2/junit-jupiter-api-5.10.2.jar:/home/codespace/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar:/home/codespace/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.2/junit-jupiter-params-5.10.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.2/junit-jupiter-engine-5.10.2.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar:/home/codespace/.m2/repository/org/mockito/mockito-core/5.12.0/mockito-core-5.12.0.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy/1.14.15/byte-buddy-1.14.15.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.15/byte-buddy-agent-1.14.15.jar:/home/codespace/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/home/codespace/.m2/repository/org/mockito/mockito-junit-jupiter/5.12.0/mockito-junit-jupiter-5.12.0.jar:/home/codespace/.m2/repository/io/rest-assured/rest-assured/5.5.0/rest-assured-5.5.0.jar:/home/codespace/.m2/repository/org/apache/groovy/groovy/4.0.22/groovy-4.0.22.jar:/home/codespace/.m2/repository/org/apache/groovy/groovy-xml/4.0.22/groovy-xml-4.0.22.jar:/home/codespace/.m2/repository/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar:/home/codespace/.m2/repository/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar:/home/codespace/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/codespace/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar:/home/codespace/.m2/repository/org/apache/httpcomponents/httpmime/4.5.13/httpmime-4.5.13.jar:/home/codespace/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/home/codespace/.m2/repository/org/ccil/cowan/tagsoup/tagsoup/1.2.1/tagsoup-1.2.1.jar:/home/codespace/.m2/repository/io/rest-assured/xml-path/5.5.0/xml-path-5.5.0.jar:/home/codespace/.m2/repository/org/apache/commons/commons-lang3/3.11/commons-lang3-3.11.jar:/home/codespace/.m2/repository/io/rest-assured/json-path/5.5.0/json-path-5.5.0.jar:/home/codespace/.m2/repository/org/apache/groovy/groovy-json/4.0.22/groovy-json-4.0.22.jar:/home/codespace/.m2/repository/io/rest-assured/rest-assured-common/5.5.0/rest-assured-common-5.5.0.jar:"/>
+    <property name="java.vm.vendor" value="Microsoft"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://www.microsoft.com"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="os.name" value="Linux"/>
+    <property name="java.vm.specification.version" value="25"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/usr/local/sdkman/candidates/java/25.0.2-ms/lib"/>
+    <property name="sun.java.command" value="/workspaces/Taller2NET/qa/jee/target/surefire/surefirebooter-20260525214120918_3.jar /workspaces/Taller2NET/qa/jee/target/surefire 2026-05-25T21-41-20_800-jvmRun1 surefire-20260525214120918_1tmp surefire_0-20260525214120918_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/workspaces/Taller2NET/qa/jee/target/test-classes:/workspaces/Taller2NET/qa/jee/target/classes:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.2/junit-jupiter-5.10.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.2/junit-jupiter-api-5.10.2.jar:/home/codespace/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar:/home/codespace/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.2/junit-jupiter-params-5.10.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.2/junit-jupiter-engine-5.10.2.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar:/home/codespace/.m2/repository/org/mockito/mockito-core/5.12.0/mockito-core-5.12.0.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy/1.14.15/byte-buddy-1.14.15.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.15/byte-buddy-agent-1.14.15.jar:/home/codespace/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/home/codespace/.m2/repository/org/mockito/mockito-junit-jupiter/5.12.0/mockito-junit-jupiter-5.12.0.jar:/home/codespace/.m2/repository/io/rest-assured/rest-assured/5.5.0/rest-assured-5.5.0.jar:/home/codespace/.m2/repository/org/apache/groovy/groovy/4.0.22/groovy-4.0.22.jar:/home/codespace/.m2/repository/org/apache/groovy/groovy-xml/4.0.22/groovy-xml-4.0.22.jar:/home/codespace/.m2/repository/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar:/home/codespace/.m2/repository/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar:/home/codespace/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/codespace/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar:/home/codespace/.m2/repository/org/apache/httpcomponents/httpmime/4.5.13/httpmime-4.5.13.jar:/home/codespace/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/home/codespace/.m2/repository/org/ccil/cowan/tagsoup/tagsoup/1.2.1/tagsoup-1.2.1.jar:/home/codespace/.m2/repository/io/rest-assured/xml-path/5.5.0/xml-path-5.5.0.jar:/home/codespace/.m2/repository/org/apache/commons/commons-lang3/3.11/commons-lang3-3.11.jar:/home/codespace/.m2/repository/io/rest-assured/json-path/5.5.0/json-path-5.5.0.jar:/home/codespace/.m2/repository/org/apache/groovy/groovy-json/4.0.22/groovy-json-4.0.22.jar:/home/codespace/.m2/repository/io/rest-assured/rest-assured-common/5.5.0/rest-assured-common-5.5.0.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/codespace"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-01-20"/>
+    <property name="java.home" value="/usr/local/sdkman/candidates/java/25.0.2-ms"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/workspaces/Taller2NET/qa/jee"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="surefire.real.class.path" value="/workspaces/Taller2NET/qa/jee/target/surefire/surefirebooter-20260525214120918_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="25.0.2+10-LTS"/>
+    <property name="user.name" value="codespace"/>
+    <property name="stdout.encoding" value="UTF-8"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="6.8.0-1044-azure"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Microsoft-13053558"/>
+    <property name="localRepository" value="/home/codespace/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/microsoft/openjdk/issues"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="25.0.2"/>
+    <property name="user.dir" value="/workspaces/Taller2NET/qa/jee"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="UTF-8"/>
+    <property name="java.vendor" value="Microsoft"/>
+    <property name="java.vm.version" value="25.0.2+10-LTS"/>
+    <property name="stdin.encoding" value="UTF-8"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="69.0"/>
+  </properties>
+  <testcase name="templateShouldBeReplacedWithRealServiceTest" classname="com.taller4.service.AuthServiceTest" time="0.804">
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (/home/codespace/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.15/byte-buddy-agent-1.14.15.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+</testsuite>
